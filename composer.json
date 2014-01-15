@@ -1,5 +1,5 @@
 {
-    "name": "gabrielem/PHP-SVG-Barcode",
+    "name": "gabrielem/php-svg-barcode",
     "require": {
         "php": ">=5.3.0",
         "another-vendor/package": "1.*",
