@@ -1,33 +1,43 @@
 <?php
-    //Left start with white bar and right with black
-    $bartable=array('3211','2221','2122','1411','1132','1231','1114','1312','1213','3112');
-    $guard='101';
-    $center='01010';
+class EAN8{    
     
-    //configure
-    $unit='px';//Base Unit
-    $bw=3;
-    $width=75*$bw;
-    $height=50*$bw;
-    $fs=8*$bw;
-    $x=4*$bw;
-    $yt=45*$bw;
-    $dx=3*$bw;
-    $y=2.5*$bw;
-    $sb=35*$bw;
-    $lb=45*$bw;
+    public $bartable;
+
+    function __construct(){
+    //+32=ASCII Total: 106.                   
+    $this->bartable=array('3211','2221','2122','1411','1132','1231','1114','1312','1213','3112');
+    }
     
-    function check($str){
+    function check($str)
+    {
         $code=str_split($str);
         $sum=($code[0]+$code[2]+$code[4]+$code[6])*3;
         $sum+=$code[1]+$code[3]+$code[5];
         $sum=10-($sum %10);
         return $sum;
     }
-    function draw($num){
-        global  $unit,$bartable,$guard,$center,$width, $bw, $height,$fs, $x,$y,$yt,$dx, $sb, $lb;
+    function draw($num)
+    {
+        //Left start with white bar and right with black
+        $bartable=$this->bartable;
+        $guard='101';
+        $center='01010';
+
+        //configure
+        $unit='px';//Base Unit
+        $bw=3;
+        $width=75*$bw;
+        $height=50*$bw;
+        $fs=8*$bw;
+        $x=4*$bw;
+        $yt=45*$bw;
+        $dx=3*$bw;
+        $y=2.5*$bw;
+        $sb=35*$bw;
+        $lb=45*$bw;
+
         $num=preg_replace('/\D/','',$num);
-        $char=$num.check($num);
+        $char=$num.$this->check($num);
         $char=str_split($char);
 
         $img='';
@@ -104,4 +114,5 @@
         $img.= '</svg>';
         return $img;
     }
+}
 ?>

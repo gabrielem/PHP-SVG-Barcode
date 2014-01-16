@@ -1,5 +1,13 @@
 <?php
-    $prity=array(
+class EAN13{
+    
+    public $prity;
+    public $bartable;
+    public $first_digit="8";
+    
+    function __construct(){
+    //+32=ASCII Total: 106.                   
+    $this->prity=array(
         array(1,1,1,1,1,1),
         array(1,1,0,1,0,0),
         array(1,1,0,0,1,0),
@@ -10,10 +18,9 @@
         array(1,0,1,0,1,0),
         array(1,0,1,0,0,1),
         array(1,0,0,1,0,1)
-    );
-    //Left has white bar at 1st.
-    //Right has black bar at 1st (event only).
-    $bartable=array(
+        );
+    
+    $this->bartable=array(
         array('3211','1123'),
         array('2221','1222'),
         array('2122','2212'),
@@ -24,7 +31,29 @@
         array('1312','2131'),
         array('1213','3121'),
         array('3112','2113')
-    );
+        );
+    }
+    
+    function check($str){
+        //$str=$this->first_digit.$str;
+        //$str=str_pad($str, 13, "0", STR_PAD_LEFT);
+        $sum=0;
+        $code=str_split($str);
+        $sum=($code[1]+$code[3]+$code[5]+$code[7]+$code[9]+$code[11])*3;
+        $sum+=$code[0]+$code[2]+$code[4]+$code[6]+$code[8]+$code[10];
+        $sum=10-($sum %10);
+        return $sum;
+    }
+    
+    
+    
+    function draw($num){
+    $prity=$this->prity;
+    
+    //Left has white bar at 1st.
+    //Right has black bar at 1st (event only).
+    $bartable=$this->bartable;
+    
     $guard='101';
     $center='01010';
     //configure
@@ -39,24 +68,14 @@
     $y=2.5*$bw;
     $sb=35*$bw;
     $lb=45*$bw;
-
-    function check($str){
-        $sum=0;
-        $code=str_split($str);
-        $sum=($code[1]+$code[3]+$code[5]+$code[7]+$code[9]+$code[11])*3;
-        $sum+=$code[0]+$code[2]+$code[4]+$code[6]+$code[8]+$code[10];
-        $sum=10-($sum %10);
-        return $sum;
-    }
-    function draw($num){
-        global  $unit,$prity,$bartable,$guard,$center,$width, $bw,$fs, $yt,$dx, $height, $x,$y, $sb, $lb;
+    
         $num=preg_replace('/\D/','',$num);
-        $char=$num.check($num);
+        $char=$num.  $this->check($num);
         $first=substr($num,0,1);
         $first=(int)$first;
         $oe=$prity[$first];//Old event array for first number
         $char=str_split($char);
-
+        
         $img='';
         $img.= "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
         $img.= "<svg width='$width$unit' height='$height$unit' version='1.1' xmlns='http://www.w3.org/2000/svg'>\n";
@@ -78,6 +97,8 @@
             $id=$i-1;//id for Old-event array
             $oev=!$oe[$id];//Old-event value
             $val=$bartable[$char[$i]][$oev];
+            
+            
             $img.= '<desc>'.htmlspecialchars($char[$i])."</desc>\n";
             $xt=$x+$dx;
             $img.= "<text x='$xt$unit' y='$yt$unit' font-family='Arial' font-size='$fs'>$char[$i]</text>\n";
@@ -134,4 +155,5 @@
         $img.= '</svg>';
         return $img;
     }
+}
 ?>
